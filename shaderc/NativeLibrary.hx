@@ -52,6 +52,16 @@ class NativeLibrary {
 				// Either doesn't exists or is not up-to-date, build.
 				Sys.println("(Re)Building the shaderc library ... (this only happens when the version changes)");
 
+				final process = new Process("./utils/git-sync-deps", []);
+
+				if (process.exitCode() != 0) {
+					Sys.stderr().write(process.stderr.readAll());
+					process.close();
+					Context.fatalError("Couldn't build shaderc", Context.currentPos());
+				}
+
+				process.close();
+
 				final build = Path.join([path, "shaderc-native", "build"]);
 				FileSystem.createDirectory(build);
 				Sys.setCwd(build);
