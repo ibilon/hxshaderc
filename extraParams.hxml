@@ -1,0 +1,2 @@
+--macro nullSafety("shaderc", Strict)
+--macro shaderc.NativeLibrary.build()

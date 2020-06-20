@@ -1,0 +1,99 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build host",
+			"type": "process",
+			"command": "haxe",
+			"args": [
+				"cppia_host.hxml"
+			],
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			]
+		},
+		{
+			"label": "Build sample",
+			"type": "process",
+			"command": "haxe",
+			"args": [
+				"sample.hxml"
+			],
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			]
+		},
+		{
+			"label": "Run sample",
+			"type": "process",
+			"command": "./build/cppia_host/CppiaHost-debug",
+			"args": [
+				"build/sample.cppia"
+			],
+			"problemMatcher": [],
+			"dependsOn": "Build sample",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Pretask for Generate documentation",
+			"type": "process",
+			"command": "haxe",
+			"args": [
+				"cppia_host.hxml",
+				"-xml",
+				"documentation/hxshaderc.xml",
+				"-D",
+				"no-compilation"
+			],
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			]
+		},
+		{
+			"label": "Generate documentation",
+			"type": "process",
+			"command": "haxelib",
+			"args": [
+				"run",
+				"dox",
+				"-o",
+				"documentation/out/",
+				"-i",
+				"documentation/hxshaderc.xml",
+				"-in",
+				"shaderc",
+				"--title",
+				"hxshaderc API reference",
+				"--toplevel-package",
+				"shaderc",
+				"--keep-field-order",
+				"-D",
+				"version",
+				"0.0.1",
+				"-D",
+				"source-path",
+				"https://github.com/ibilon/hxshaderc/blob/master/",
+				"-D",
+				"website",
+				"https://github.com/ibilon/hxshaderc",
+				"-D",
+				"description",
+				"hxshaderc is a haxe/hxcpp wrapper around shaderc, a compiler for GLSL/HLSL to SPIR-V"
+			],
+			"problemMatcher": [],
+			"dependsOn": "Pretask for Generate documentation"
+		}
+	]
+}

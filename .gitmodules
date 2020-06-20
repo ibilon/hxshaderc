@@ -1,0 +1,3 @@
+[submodule "shaderc-native"]
+	path = shaderc-native
+	url = https://github.com/google/shaderc.git

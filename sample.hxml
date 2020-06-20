@@ -1,0 +1,5 @@
+extraParams.hxml
+--main sample.Main
+--debug
+--cppia build/sample.cppia
+-D dll_import=build/export_classes.info
