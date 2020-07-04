@@ -3,22 +3,33 @@ package shaderc;
 import cpp.Pointer;
 import shaderc.options.*;
 
+// TODO document
+@:allow(shaderc)
 @:headerInclude('shaderc/shaderc.h')
 @:structInit
-class CompilationOptions {
+class Options {
 	@:optional public var autoBindUniforms:Null<Bool>;
 
 	@:optional public var autoMapLocations:Null<Bool>;
 
 	@:optional public var bindingBases:Null<Map<UniformKind, UInt>>;
 
-	@:optional public var bindingBasesForStage:Null<Map<ShaderKind, Map<UniformKind, UInt>>>;
+	@:optional public var bindingBasesForStage:Null<Map<Kind, Map<UniformKind, UInt>>>;
 
 	@:optional public var forcedVersionProfile:Null<{version:Int, profile:Profile}>;
 
 	@:optional public var generateDebugInfo:Null<Bool>;
 
 	@:optional public var hlsl:Null<HlslOptions>;
+
+	/**
+		Whether the compiler should determine block member offsets using HLSL packing rules instead of standard GLSL rules.
+
+		Defaults to false.
+
+		Only affects GLSL compilation, HLSL rules are always used when compiling HLSL.
+	**/
+	@:optional public var hlslOffsets:Null<Bool>;
 
 	// TODO @:optional public var includeCallbacks
 	@:optional public var invertY:Null<Bool>;
@@ -41,7 +52,7 @@ class CompilationOptions {
 
 	@:optional public var warningsAsErrors:Null<Bool>;
 
-	public function clone():CompilationOptions {
+	public function clone():Options {
 		return {
 			autoBindUniforms: autoBindUniforms,
 			autoMapLocations: autoMapLocations,
@@ -58,7 +69,6 @@ class CompilationOptions {
 			hlsl: hlsl == null ? null : {
 				functionality1: hlsl.functionality1,
 				ioMapping: hlsl.ioMapping,
-				offsets: hlsl.offsets,
 				registerSetAndBinding: hlsl.registerSetAndBinding == null ? null : [
 					for (register => descriptor in hlsl.registerSetAndBinding)
 						register => {
@@ -77,6 +87,7 @@ class CompilationOptions {
 							]
 				],
 			},
+			hlslOffsets: hlslOffsets,
 			// TODO includeCallbacks
 			invertY: invertY,
 			limits: limits == null ? null : [for (limit => value in limits) limit => value],
@@ -92,7 +103,7 @@ class CompilationOptions {
 	}
 
 	/**
-		You need to release the shaderc_compile_options_t after using it.
+		You need to release the `shaderc_compile_options_t` after using it.
 	**/
 	function toNative():Pointer<cpp.Void> {
 		untyped __cpp__('shaderc_compile_options_t options = shaderc_compile_options_initialize()');
@@ -137,10 +148,6 @@ class CompilationOptions {
 			untyped __cpp__('shaderc_compile_options_set_hlsl_io_mapping(options, {0})', hlsl.ioMapping);
 		}
 
-		if (hlsl != null && hlsl.offsets != null) {
-			untyped __cpp__('shaderc_compile_options_set_hlsl_offsets(options, {0})', hlsl.offsets);
-		}
-
 		if (hlsl != null && hlsl.registerSetAndBinding != null) {
 			for (_register => descriptor in hlsl.registerSetAndBinding) {
 				final set = descriptor.set;
@@ -157,6 +164,10 @@ class CompilationOptions {
 					untyped __cpp__('shaderc_compile_options_set_hlsl_register_set_and_binding_for_stage(options, (shaderc_shader_kind)kind, _register, set, binding)');
 				}
 			}
+		}
+
+		if (hlslOffsets != null) {
+			untyped __cpp__('shaderc_compile_options_set_hlsl_offsets(options, hlslOffsets)');
 		}
 
 		// TODO includeCallbacks

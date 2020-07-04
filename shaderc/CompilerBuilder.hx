@@ -9,17 +9,17 @@ import sys.FileSystem;
 
 @:dox(hide)
 @:noCompletion
-class ShaderCompilerBuilder {
+class CompilerBuilder {
 	/**
 		Build macro for shaderc, adds a @:buildXml meta with the correct path to the built static library.
 	**/
 	public static macro function build():Array<Field> {
-		var path = switch (Context.getType("shaderc.ShaderCompilerBuilder")) {
+		var path = switch (Context.getType("shaderc.CompilerBuilder")) {
 			case TInst(_.get() => t, _):
 				FileSystem.absolutePath(Path.join([Path.directory(Context.getPosInfos(t.pos).file), ".."]));
 
 			default:
-				throw "can't find the shaderc.ShaderCompilerBuilder type";
+				throw "can't find the shaderc.CompilerBuilder type";
 		}
 
 		Context.getLocalClass().get().meta.add(":buildXml", [

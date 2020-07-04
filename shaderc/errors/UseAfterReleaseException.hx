@@ -1,11 +1,17 @@
 package shaderc.errors;
 
+/**
+	The compiler was used after being released.
+
+	A `Compiler` object was used after `Compiler.release` was called.
+**/
 @:allow(shaderc)
 class UseAfterReleaseException extends Exception {
-	public var compiler:ShaderCompiler;
+	/** The compiler that was incorrectly used. **/
+	public var compiler:Compiler;
 
-	function new(compiler:ShaderCompiler) {
+	function new(compiler:Compiler) {
 		this.compiler = compiler;
-		super("Use after release");
+		super("The compiler was used after being released");
 	}
 }

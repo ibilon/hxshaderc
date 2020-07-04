@@ -4,12 +4,12 @@ import shaderc.*;
 
 class Main {
 	static function main() {
-		trace(ShaderCompiler.spirvVersion);
-		trace(ShaderCompiler.parseVersionProfile("450core").profile == Core);
-		trace(ShaderCompiler.parseVersionProfile("320").profile == None);
-		trace(ShaderCompiler.parseVersionProfile("error") == null);
+		trace(Compiler.spirvVersion);
+		trace(Compiler.parseVersionProfile("450core").profile == Core);
+		trace(Compiler.parseVersionProfile("320").profile == None);
+		trace(Compiler.parseVersionProfile("error") == null);
 
-		var compiler = new ShaderCompiler();
+		var compiler = new Compiler();
 		compiler.release();
 	}
 }
