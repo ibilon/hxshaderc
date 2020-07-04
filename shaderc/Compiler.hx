@@ -1,6 +1,7 @@
 package shaderc;
 
-import cpp.UInt32;
+import cpp.NativeString;
+import cpp.Pointer;
 import haxe.ds.ReadOnlyArray;
 import shaderc.errors.*;
 
@@ -19,10 +20,10 @@ class Compiler {
 	public static var spirvVersion(get, never):{major:Int, minor:Int, revision:Int};
 
 	static function get_spirvVersion():{major:Int, minor:Int, revision:Int} {
-		var version:UInt32 = 0;
-		var revision:UInt32 = 0;
+		var version:Int = 0;
+		var revision:Int = 0;
 
-		untyped __cpp__('shaderc_get_spv_version(&version, &revision)');
+		untyped __cpp__('shaderc_get_spv_version((uint32_t*)&version, (uint32_t*)&revision)');
 
 		return {
 			major: (version >> 16) & 0xFF,
@@ -83,10 +84,10 @@ class Compiler {
 		@param source The source of the shader, if `Options.sourceLanguage` isn't set it will be treated as GLSL..
 		@param options Optional, if set then the compilation is modified by any options present that affects assembly.
 
-		@throws CompilationFailureException If there was failure in allocating the compiler object.
+		@throws CompilationFailureException If the compilation failed.
 		@throws UseAfterReleaseException If the object was released.
 	**/
-	public function assemble(source:String, ?options:Options):Result<ReadOnlyArray<UInt32>> {
+	public function assemble(source:String, ?options:Options):Result<ReadOnlyArray<Int>> {
 		validate();
 
 		if (options == null) {
@@ -101,9 +102,7 @@ class Compiler {
 			shaderc_compile_options_release(native_options);
 		');
 
-		if (untyped __cpp__('result == nullptr')) {
-			throw new CompilationFailureException(this);
-		}
+		validateResult(untyped __cpp__('result'));
 
 		return Result.createBinary(untyped __cpp__('result'));
 	}
@@ -119,10 +118,10 @@ class Compiler {
 		@param entryPoint Defines the name of the entry point.
 		@param options Optional, if set then the compilation is modified by any options present.
 
-		@throws CompilationFailureException If there was failure in allocating the compiler object.
+		@throws CompilationFailureException If the compilation failed.
 		@throws UseAfterReleaseException If the object was released.
 	**/
-	public function compile(source:String, kind:Kind, filename:String, entryPoint:String, ?options:Options):Result<ReadOnlyArray<UInt32>> {
+	public function compile(source:String, kind:Kind, filename:String, entryPoint:String, ?options:Options):Result<ReadOnlyArray<Int>> {
 		validate();
 
 		if (options == null) {
@@ -137,9 +136,7 @@ class Compiler {
 			shaderc_compile_options_release(native_options);
 		');
 
-		if (untyped __cpp__('result == nullptr')) {
-			throw new CompilationFailureException(this);
-		}
+		validateResult(untyped __cpp__('result'));
 
 		return Result.createBinary(untyped __cpp__('result'));
 	}
@@ -157,7 +154,7 @@ class Compiler {
 		@param entryPoint Defines the name of the entry point.
 		@param options Optional, if set then the compilation is modified by any options present.
 
-		@throws CompilationFailureException If there was failure in allocating the compiler object.
+		@throws CompilationFailureException If the compilation failed.
 		@throws UseAfterReleaseException If the object was released.
 	**/
 	public function compileIntoAssembly(source:String, kind:Kind, filename:String, entryPoint:String, ?options:Options):Result<String> {
@@ -175,9 +172,7 @@ class Compiler {
 			shaderc_compile_options_release(native_options);
 		');
 
-		if (untyped __cpp__('result == nullptr')) {
-			throw new CompilationFailureException(this);
-		}
+		validateResult(untyped __cpp__('result'));
 
 		return Result.createText(untyped __cpp__('result'));
 	}
@@ -192,7 +187,7 @@ class Compiler {
 		@param entryPoint Defines the name of the entry point.
 		@param options Optional, if set then the compilation is modified by any options present.
 
-		@throws CompilationFailureException If there was failure in allocating the compiler object.
+		@throws CompilationFailureException If the compilation failed.
 		@throws UseAfterReleaseException If the object was released.
 	**/
 	public function preprocess(source:String, filename:String, entryPoint:String, ?options:Options):Result<String> {
@@ -210,9 +205,7 @@ class Compiler {
 			shaderc_compile_options_release(native_options);
 		');
 
-		if (untyped __cpp__('result == nullptr')) {
-			throw new CompilationFailureException(this);
-		}
+		validateResult(untyped __cpp__('result'));
 
 		return Result.createText(untyped __cpp__('result'));
 	}
@@ -233,5 +226,40 @@ class Compiler {
 		if (untyped __cpp__('native == nullptr')) {
 			throw new UseAfterReleaseException(this);
 		}
+	}
+
+	/**
+		@throws CompilationFailureException
+	**/
+	function validateResult(ptr:Pointer<cpp.Void>):Void {
+		untyped __cpp__('shaderc_compilation_result_t result = (shaderc_compilation_result_t)((void*)ptr);');
+		final status = untyped __cpp__('shaderc_result_get_compilation_status(result)');
+
+		if (status == 0) {
+			return;
+		}
+
+		final message = NativeString.fromPointer(untyped __cpp__('shaderc_result_get_error_message(result)'));
+
+		throw new CompilationFailureException(this, switch (status) {
+			case 1:
+				InvalidStage(message);
+			case 2:
+				CompilationError(untyped __cpp__('shaderc_result_get_num_errors(result)'), message);
+			case 3:
+				InternalError(message);
+			case 4:
+				NullResultObject(message);
+			case 5:
+				InvalidAssembly(message);
+			case 6:
+				ValidationError(message);
+			case 7:
+				TransformationError(message);
+			case 8:
+				ConfigurationError(message);
+			default:
+				throw "assert false";
+		});
 	}
 }

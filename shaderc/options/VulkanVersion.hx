@@ -3,7 +3,7 @@ package shaderc.options;
 /**
 	Vulkan version.
 **/
-enum abstract VulkanVersion(UInt) {
+enum abstract VulkanVersion(Int) {
 	/** Vulkan version 1.0. **/
 	var Vulkan1_0 = 1 << 22;
 

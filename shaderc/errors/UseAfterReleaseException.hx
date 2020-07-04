@@ -8,7 +8,7 @@ package shaderc.errors;
 @:allow(shaderc)
 class UseAfterReleaseException extends Exception {
 	/** The compiler that was incorrectly used. **/
-	public var compiler:Compiler;
+	public var compiler(default, null):Compiler;
 
 	function new(compiler:Compiler) {
 		this.compiler = compiler;

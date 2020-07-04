@@ -3,7 +3,7 @@ package shaderc.options;
 /**
 	SPIR-V version.
 **/
-enum abstract SpirvVersion(UInt) {
+enum abstract SpirvVersion(Int) {
 	/** SPIR-V version 1.0. **/
 	var V1_0 = 0x010000;
 

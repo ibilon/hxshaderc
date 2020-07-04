@@ -12,9 +12,9 @@ class Options {
 
 	@:optional public var autoMapLocations:Null<Bool>;
 
-	@:optional public var bindingBases:Null<Map<UniformKind, UInt>>;
+	@:optional public var bindingBases:Null<Map<UniformKind, Int>>;
 
-	@:optional public var bindingBasesForStage:Null<Map<Kind, Map<UniformKind, UInt>>>;
+	@:optional public var bindingBasesForStage:Null<Map<Kind, Map<UniformKind, Int>>>;
 
 	@:optional public var forcedVersionProfile:Null<{version:Int, profile:Profile}>;
 

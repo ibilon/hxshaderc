@@ -6,10 +6,30 @@ package shaderc.errors;
 @:allow(shaderc)
 class CompilationFailureException extends Exception {
 	/** The compiler that failed the compilation. **/
-	public var compiler:Compiler;
+	public var compiler(default, null):Compiler;
 
-	function new(compiler:Compiler) {
+	/** The error reason. **/
+	public var reason(default, null):CompilationFailureReason;
+
+	function new(compiler:Compiler, reason:CompilationFailureReason) {
 		this.compiler = compiler;
+		this.reason = reason;
 		super("An error occurred during compilation");
 	}
+}
+
+/**
+	Compilation failure reason.
+
+	Each enumerant holds its error message.
+**/
+enum CompilationFailureReason {
+	CompilationError(number:Int, message:String);
+	InternalError(message:String);
+	InvalidStage(message:String);
+	InvalidAssembly(message:String);
+	NullResultObject(message:String);
+	ValidationError(message:String);
+	TransformationError(message:String);
+	ConfigurationError(message:String);
 }
