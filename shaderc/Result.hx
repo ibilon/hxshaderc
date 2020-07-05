@@ -20,9 +20,10 @@ class Result<T> {
 		var data = new Array<Int>();
 
 		untyped __cpp__('
-			const char *native_data = shaderc_result_get_bytes(result);
-			for (unsigned int i = 0; i < shaderc_result_get_length(result) / 4; i += 4) {
-				data->push((native_data[i * 4] << 24) | (native_data[i * 4 + 1] << 16) | (native_data[i * 4 + 2] << 8) | native_data[i * 4 + 3]);
+			const uint32_t *native_data = (uint32_t*)shaderc_result_get_bytes(result);
+			unsigned int length = shaderc_result_get_length(result) / 4;
+			for (unsigned int i = 0; i < length; ++i) {
+				data->push(native_data[i]);
 			}
 
 			shaderc_result_release(result);
