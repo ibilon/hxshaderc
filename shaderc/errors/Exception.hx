@@ -10,4 +10,8 @@ class Exception {
 	function new(message:String) {
 		this.message = message;
 	}
+
+	function toString():String {
+		return message;
+	}
 }

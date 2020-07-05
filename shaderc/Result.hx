@@ -4,6 +4,9 @@ import cpp.NativeString;
 import cpp.Pointer;
 import haxe.ds.ReadOnlyArray;
 
+/**
+	The result of a compilation.
+**/
 @:allow(shaderc)
 @:headerInclude('shaderc/shaderc.h')
 class Result<T> {
@@ -42,8 +45,10 @@ class Result<T> {
 		return new Result(data, warnings);
 	}
 
+	/** The compilation's output. **/
 	public var data(default, null):T;
 
+	/** The compilation's warnings. **/
 	public var warnings(default, null):String;
 
 	function new(data:T, warnings:String) {

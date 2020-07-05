@@ -31,6 +31,7 @@ jobs:
         echo caa519ca532a6a3a0279509fce2ceb791c4f4651 > build/hash.txt
         haxe cppia_host.hxml -xml documentation/hxshaderc.xml
         haxe sample.hxml
+        ./build/cppia_host/CppiaHost-debug build/sample.cppia
         haxelib run dox -o documentation/out/ -i documentation/hxshaderc.xml -in shaderc --title "hxshaderc API reference" --toplevel-package shaderc --keep-field-order -D version 0.0.1 -D source-path https://github.com/ibilon/hxshaderc/blob/master/ -D website https://github.com/ibilon/hxshaderc -D description "hxshaderc is a haxe/hxcpp wrapper around shaderc, a compiler for GLSL/HLSL to SPIR-V"
         cd documentation/out
         git init

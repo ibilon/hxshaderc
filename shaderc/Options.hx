@@ -3,55 +3,161 @@ package shaderc;
 import cpp.Pointer;
 import shaderc.options.*;
 
-// TODO document
+/**
+	Compilation options.
+
+	To be created using a structure init:
+	```haxe
+	var options:CompilationOptions = {
+		autoBindUniforms: false,
+		// ...
+	};
+	```
+**/
 @:allow(shaderc)
 @:headerInclude('shaderc/shaderc.h')
 @:structInit
 class Options {
+	/**
+		Optional, sets whether the compiler should automatically assign bindings to uniforms that aren't already explicitly bound in the shader source.
+
+		Defaults to `false`.
+	**/
 	@:optional public var autoBindUniforms:Null<Bool>;
 
+	/**
+		Optional, sets whether the compiler should automatically assign locations to uniform variables that don't have explicit locations in the shader source.
+
+		Defaults to `false`.
+	**/
 	@:optional public var autoMapLocations:Null<Bool>;
 
+	/**
+		Optional, sets the base binding number used for for a uniform resource type when automatically assigning bindings. For GLSL compilation, sets the lowest automatically assigned number. For HLSL compilation, the regsiter number assigned to the resource is added to this specified base.
+	**/
 	@:optional public var bindingBases:Null<Map<UniformKind, Int>>;
 
+	/**
+		Optional, like `Options.bindingBases`, but only takes effect when compiling a given shader stage. The stage is assumed to be one of `Kind.Vertex`, `Kind.Fragment`, `Kind.TessellationEvaluation`, `Kind.TesselationControl`, `Kind.Geometry`, or `Kind.Compute`.
+	**/
 	@:optional public var bindingBasesForStage:Null<Map<Kind, Map<UniformKind, Int>>>;
 
+	/**
+		Optional, forces the GLSL language version and profile to a given pair.
+
+		The version number is the same as would appear in the #version annotation in the source.
+
+		Version and profile specified here overrides the #version annotation in the source. Use profile: `Profile.None` for GLSL versions that do not define profiles, e.g. versions below 150.
+
+		Default version is 110.
+	**/
 	@:optional public var forcedVersionProfile:Null<{version:Int, profile:Profile}>;
 
+	/**
+		Optional, sets the compiler mode to generate debug information in the output.
+
+		Defaults to `false`.
+	**/
 	@:optional public var generateDebugInfo:Null<Bool>;
 
+	/**
+		HLSL specific options.
+
+		These are ignored if the source language is GLSL.
+	**/
 	@:optional public var hlsl:Null<HlslOptions>;
 
 	/**
 		Whether the compiler should determine block member offsets using HLSL packing rules instead of standard GLSL rules.
 
-		Defaults to false.
+		Defaults to `false`.
 
 		Only affects GLSL compilation, HLSL rules are always used when compiling HLSL.
 	**/
 	@:optional public var hlslOffsets:Null<Bool>;
 
 	// TODO @:optional public var includeCallbacks
+
+	/**
+		Optional, sets whether the compiler should invert position.Y output in vertex shader.
+
+		Defaults to `false`.
+	**/
 	@:optional public var invertY:Null<Bool>;
 
+	/**
+		Optional, sets resources limit.
+	**/
 	@:optional public var limits:Null<Map<Limit, Int>>;
 
+	/**
+		Optional, adds predefined macros.
+
+		If the value is `null`, it has the same effect as passing -Dname to the command-line compiler.
+	**/
 	@:optional public var macroDefinitions:Null<Map<String, Null<String>>>;
 
+	/**
+		Optional, sets whether the compiler generates code for max and min builtins which, if given a NaN operand, will return the other operand.
+
+		Similarly, the clamp builtin will favour the non-NaN operands, as if clamp were implemented as a composition of max and min.
+
+		Defaults to `false`.
+	**/
 	@:optional public var nanClamp:Null<Bool>;
 
+	/**
+		Optional, sets the compiler optimization level to the given level.
+
+		Defaults to `OptimizationLevel.None`.
+	**/
 	@:optional public var optimizationLevel:Null<OptimizationLevel>;
 
+	/**
+		Optinal, sets the source language.
+
+		Defaults to `SourceLanguage.Glsl`.
+	**/
 	@:optional public var sourceLanguage:Null<SourceLanguage>;
 
+	/**
+		Optional, sets the compiler mode to suppress warnings, overriding `Options.warningsAsError` mode.
+
+		When both `Options.supressWarnings` and `Options.warningsAsError` are `true`, warning messages will be inhibited, and will not be emitted as error messages.
+
+		Defaults to `false`.
+	**/
 	@:optional public var suppressWarnings:Null<Bool>;
 
+	/**
+		Optional, sets the target shader environment, affecting which warnings or errors will be issued.
+
+		Defaults to `TargetEnvironment.Vulkan`.
+	**/
 	@:optional public var targetEnvironment:Null<TargetEnvironment>;
 
+	/**
+		Optional, sets the target SPIR-V version.
+
+		The generated module will use this version of SPIR-V.
+		Each target environment determines what versions of SPIR-V it can consume.
+
+		Defaults to the highest version of SPIR-V 1.0 which is required to be supported by the target environment, e.g. default to SPIR-V 1.0 for Vulkan 1.0 and SPIR-V 1.3 for Vulkan 1.1.
+	**/
 	@:optional public var targetSpirvVersion:Null<SpirvVersion>;
 
+	/**
+		Optional, sets the compiler mode to treat all warnings as errors.
+
+		Note `Options.supressWarnings` overrides this option, i.e. if both `Options.warningsAsError` and `Options.supressWarnings` are `true`, warnings will not be emitted as error messages.
+	**/
 	@:optional public var warningsAsErrors:Null<Bool>;
 
+	/**
+		Returns a deep clone of these options.
+
+		Modifying either will not affect the other.
+	**/
 	public function clone():Options {
 		return {
 			autoBindUniforms: autoBindUniforms,
@@ -103,7 +209,7 @@ class Options {
 	}
 
 	/**
-		You need to release the `shaderc_compile_options_t` after using it.
+		[Internal] You need to release the `shaderc_compile_options_t` after using it.
 	**/
 	function toNative():Pointer<cpp.Void> {
 		untyped __cpp__('shaderc_compile_options_t options = shaderc_compile_options_initialize()');

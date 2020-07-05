@@ -10,14 +10,14 @@ class HlslOptions {
 	/**
 		Whether the compiler should enable extension `SPV_GOOGLE_hlsl_functionality1`.
 
-		Defaults to false.
+		Defaults to `false`.
 	**/
 	@:optional public var functionality1:Null<Bool>;
 
 	/**
 		Whether the compiler should use HLSL IO mapping rules for bindings.
 
-		Defaults to false.
+		Defaults to `false`.
 	**/
 	@:optional public var ioMapping:Null<Bool>;
 

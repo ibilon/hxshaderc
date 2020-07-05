@@ -22,7 +22,7 @@ class Main {
 
 				trace(filename, result.data.length);
 			} catch (e:CompilationFailureException) {
-				trace(e.reason);
+				trace(e);
 			}
 		}
 

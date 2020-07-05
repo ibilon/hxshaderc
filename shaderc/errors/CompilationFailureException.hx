@@ -16,6 +16,14 @@ class CompilationFailureException extends Exception {
 		this.reason = reason;
 		super("An error occurred during compilation");
 	}
+
+	override function toString():String {
+		return switch (reason) {
+			case CompilationError(_, message), InternalError(message), InvalidStage(message), InvalidAssembly(message), NullResultObject(message),
+				ValidationError(message), TransformationError(message), ConfigurationError(message):
+				'${this.message}\n$message';
+		}
+	}
 }
 
 /**
