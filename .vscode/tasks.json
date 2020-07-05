@@ -81,7 +81,7 @@
 				"--keep-field-order",
 				"-D",
 				"version",
-				"0.0.1",
+				"0.1.0",
 				"-D",
 				"source-path",
 				"https://github.com/ibilon/hxshaderc/blob/master/",

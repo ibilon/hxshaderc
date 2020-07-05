@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": ["shader", "glsl", "hlsl", "spir-v"],
 	"description": "hxshaderc is a haxe/hxcpp wrapper around shaderc, a compiler for GLSL/HLSL to SPIR-V",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"releasenote": "Initial release",
 	"contributors": ["_ibilon"]
 }
